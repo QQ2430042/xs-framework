@@ -1,3 +1,4 @@
+# Build output
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -15,3 +16,11 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# IDE
+.idea/
+.DS_Store
+
+# Local tools / runtime artifacts (JDK, benchmark results, temp logs)
+.tools/
+*.log
