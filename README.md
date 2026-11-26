@@ -1,7 +1,4 @@
 # xs-framework
-<<<<<<< HEAD
-xs-framework 1.0
-=======
 
 基于 Spring Boot 4 / JDK 25 / JPA 的长期维护服务基座，采用 SDD（Spec-Driven Development）方式演进。同一套 `api-* / module-* / starter-* / app-*` 模块即可装配为**单体**，也可拆成**独立微服务**。
 
@@ -78,4 +75,3 @@ bash scripts/deploy/start.sh user -- \
 ## License
 
 Apache License 2.0（见 `LICENSE`）。
->>>>>>> 39b3e3a8a4d99f50c1dfdcac5711edd48a11189f
