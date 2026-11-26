@@ -1,0 +1,170 @@
+openapi: 3.1.0
+info:
+  title: Tenant API
+  description: Contract for the control-plane tenant registry.
+  version: 1.0.0
+paths:
+  /api/v1/tenants:
+    post:
+      tags: [Tenant]
+      operationId: createTenant
+      summary: Create a tenant
+      description: Registers a new tenant in the control-plane registry without requiring a tenant context.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTenantRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantResponse'
+        '400':
+          description: Invalid request or duplicate tenant code
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Forbidden
+    get:
+      tags: [Tenant]
+      operationId: listTenants
+      summary: List tenants
+      description: Lists all non-deleted tenants in the control-plane registry.
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantListResponse'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Forbidden
+  /api/v1/tenants/{tenantId}:
+    get:
+      tags: [Tenant]
+      operationId: getTenant
+      summary: Get a tenant by id
+      description: Returns one tenant from the control-plane registry.
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          description: Tenant identifier.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantResponse'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+  /api/v1/tenants/{tenantId}/status:
+    patch:
+      tags: [Tenant]
+      operationId: changeTenantStatus
+      summary: Change tenant status
+      description: Activates or suspends a tenant in the control-plane registry.
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          description: Tenant identifier.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStatusRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantResponse'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+components:
+  schemas:
+    CreateTenantRequest:
+      type: object
+      required: [tenantName]
+      properties:
+        tenantName:
+          type: string
+          maxLength: 128
+        description:
+          type: string
+          maxLength: 255
+    ChangeStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ACTIVE, SUSPENDED]
+    TenantStatus:
+      type: string
+      enum: [ACTIVE, SUSPENDED]
+    TenantView:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        tenantCode:
+          type: string
+          pattern: '^TN[0-9A-F]{14}$'
+        tenantName:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/TenantStatus'
+    TenantResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/TenantView'
+    TenantListResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TenantView'

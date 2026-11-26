@@ -1,0 +1,34 @@
+extends: spectral:oas
+
+rules:
+  # The authored spec is domain-facing; servers are deployment detail.
+  oas3-api-servers: off
+  # Keep lightweight specs focused on contract shape, not directory metadata.
+  info-contact: off
+  info-license: off
+  # Tag names are enforced by operation-tags; no global tag registry yet.
+  operation-tag-defined: off
+
+  operation-description: error
+  operation-operationId: error
+  operation-operationId-unique: error
+  operation-tags: error
+  oas3-parameter-description: warn
+  oas3-unused-component: warn
+
+  # Spectral 6.15 has no built-in 4xx rule; express it with the schema function.
+  operation-4xx-response:
+    description: Operation must define at least one 4xx response.
+    recommended: true
+    severity: error
+    given: '$.paths[*][get,put,post,delete,options,head,patch,trace].responses'
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          not:
+            type: object
+            propertyNames:
+              not:
+                pattern: '^4[0-9][0-9]$'

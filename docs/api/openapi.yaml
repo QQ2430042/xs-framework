@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  title: XS Framework API
+  description: Tenant-scoped service API contract.
+  version: 1.0.0
+servers:
+- url: http://127.0.0.1:18080
+  description: Generated server url
+paths:
+  /api/v1/users:
+    post:
+      tags:
+      - User
+      summary: Create a user
+      description: Creates one user in the tenant resolved from the request context.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "400":
+          description: Invalid request or missing tenant context
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "401":
+          description: Unauthenticated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+  /api/v1/tenants:
+    get:
+      tags:
+      - Tenant
+      summary: List tenants
+      description: Lists all non-deleted tenants in the control-plane registry.
+      operationId: listTenants
+      responses:
+        "200":
+          description: Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseListTenantView"
+        "400":
+          description: Invalid request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseListTenantView"
+        "401":
+          description: Unauthenticated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseListTenantView"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseListTenantView"
+    post:
+      tags:
+      - Tenant
+      summary: Create a tenant
+      description: Registers a new tenant in the control-plane registry without requiring
+        a tenant context.
+      operationId: createTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantRequest"
+        required: true
+      responses:
+        "200":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "400":
+          description: Invalid request or duplicate tenant code
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "401":
+          description: Unauthenticated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+  /api/v1/tenants/{tenantId}/status:
+    patch:
+      tags:
+      - Tenant
+      summary: Change tenant status
+      description: Activates or suspends a tenant in the control-plane registry.
+      operationId: changeTenantStatus
+      parameters:
+      - name: tenantId
+        in: path
+        description: Tenant identifier.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "400":
+          description: Invalid request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "401":
+          description: Unauthenticated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "404":
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+  /api/v1/users/{userId}:
+    get:
+      tags:
+      - User
+      summary: Get a user by id
+      description: Returns one user visible to the current tenant.
+      operationId: getUser
+      parameters:
+      - name: userId
+        in: path
+        description: User identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "400":
+          description: Invalid request or missing tenant context
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "401":
+          description: Unauthenticated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+        "404":
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserView"
+  /api/v1/tenants/{tenantId}:
+    get:
+      tags:
+      - Tenant
+      summary: Get a tenant by id
+      description: Returns one tenant from the control-plane registry.
+      operationId: getTenant
+      parameters:
+      - name: tenantId
+        in: path
+        description: Tenant identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "400":
+          description: Invalid request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "401":
+          description: Unauthenticated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+        "404":
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponseTenantView"
+components:
+  schemas:
+    CreateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        displayName:
+          type: string
+      required:
+      - username
+    ApiResponseUserView:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/UserView"
+        traceId:
+          type: string
+    UserView:
+      type: object
+      properties:
+        userId:
+          type: string
+        tenantId:
+          type: string
+        userCode:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+    CreateTenantRequest:
+      type: object
+      properties:
+        tenantName:
+          type: string
+          minLength: 1
+        description:
+          type: string
+      required:
+      - tenantName
+    ApiResponseTenantView:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/TenantView"
+        traceId:
+          type: string
+    TenantView:
+      type: object
+      properties:
+        tenantId:
+          type: string
+        tenantCode:
+          type: string
+        tenantName:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - SUSPENDED
+    ChangeStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - SUSPENDED
+      required:
+      - status
+    ApiResponseListTenantView:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantView"
+        traceId:
+          type: string
